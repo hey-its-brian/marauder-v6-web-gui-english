@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="es">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -232,46 +232,46 @@ select{background:#0a121a;border:1px solid var(--line);border-radius:6px;padding
     </div>
   </div>
   <div class="connection">
-    <span id="status" class="status"><i class="dot"></i><span id="stateText">Desconectado</span></span>
-    <button id="connect" class="primary">Conectar USB</button>
+    <span id="status" class="status"><i class="dot"></i><span id="stateText">Disconnected</span></span>
+    <button id="connect" class="primary">Connect USB</button>
   </div>
 </header>
 <div class="layout">
   <aside>
     <div class="side-head">
-      <strong>Menú del dispositivo</strong>
+      <strong>Device menu</strong>
       <span id="menuCount" class="count"></span>
     </div>
-    <input id="menuFilter" type="search" placeholder="Filtrar comandos…" autocomplete="off" aria-label="Filtrar comandos">
-    <nav id="groups" aria-label="Comandos Marauder"></nav>
-    <button id="stop" class="stop" disabled>■ Detener · stopscan</button>
+    <input id="menuFilter" type="search" placeholder="Filter commands…" autocomplete="off" aria-label="Filter commands">
+    <nav id="groups" aria-label="Marauder commands"></nav>
+    <button id="stop" class="stop" disabled>■ Stop · stopscan</button>
   </aside>
   <main>
     <div class="hero">
       <div>
-        <span class="eyebrow">Consola USB</span>
-        <h2>Control del ESP32 Marauder</h2>
-        <p>Menú alineado con el firmware. El comando que se envía aparece debajo del nombre, y su descripción justo abajo.</p>
+        <span class="eyebrow">USB Console</span>
+        <h2>ESP32 Marauder Control</h2>
+        <p>Menu aligned with the firmware. The command that gets sent appears below the name, and its description right below it.</p>
       </div>
       <span class="badge">Firmware v1.16.0</span>
     </div>
     <div id="compat" class="notice" hidden></div>
     <div class="stats">
-      <div class="stat"><span>Transporte</span><strong>Web Serial · 115200</strong></div>
+      <div class="stat"><span>Transport</span><strong>Web Serial · 115200</strong></div>
       <div class="stat"><span>RX</span><strong id="rx">0 B</strong></div>
-      <div class="stat"><span>Sesión</span><strong id="session">Sin conexión</strong></div>
+      <div class="stat"><span>Session</span><strong id="session">Not connected</strong></div>
     </div>
     <section id="actionEditor" class="panel editor" hidden>
       <div class="bar">
-        <h3 id="actionTitle">Configurar comando</h3>
-        <button id="cancelAction">Cerrar</button>
+        <h3 id="actionTitle">Configure command</h3>
+        <button id="cancelAction">Close</button>
       </div>
       <div class="editor-body">
         <p id="actionHelp"></p>
         <div id="actionFields" class="editor-grid"></div>
         <code id="actionPreview" class="preview"></code>
         <p id="actionError" class="error"></p>
-        <div class="editor-actions"><button id="runAction" class="primary">Enviar comando</button></div>
+        <div class="editor-actions"><button id="runAction" class="primary">Send command</button></div>
       </div>
     </section>
     <section class="panel">
@@ -279,24 +279,24 @@ select{background:#0a121a;border:1px solid var(--line);border-radius:6px;padding
         <h3>🖥 Terminal CLI</h3>
         <div class="tools">
           <label><input id="autoscroll" type="checkbox" checked> Autoscroll</label>
-          <button id="export">Exportar log</button>
-          <button id="clear">Limpiar</button>
+          <button id="export">Export log</button>
+          <button id="clear">Clear</button>
         </div>
       </div>
-      <pre id="terminal" class="terminal" tabindex="0" aria-label="Salida serial"></pre>
+      <pre id="terminal" class="terminal" tabindex="0" aria-label="Serial output"></pre>
       <form id="cli">
         <span class="prompt">❯</span>
-        <input id="command" maxlength="512" autocomplete="off" spellcheck="false" placeholder="Escribe un comando… (help)">
-        <select id="eol" aria-label="Fin de línea"><option value="lf">LF</option><option value="crlf">CRLF</option></select>
-        <button id="send" class="primary" type="submit">Enviar ⏎</button>
+        <input id="command" maxlength="512" autocomplete="off" spellcheck="false" placeholder="Type a command… (help)">
+        <select id="eol" aria-label="End of line"><option value="lf">LF</option><option value="crlf">CRLF</option></select>
+        <button id="send" class="primary" type="submit">Send ⏎</button>
       </form>
     </section>
     <section class="panel">
       <div class="bar"><h3>⚙ Device &amp; Settings</h3></div>
       <div class="settings-note">
-        Los ajustes avanzados como <code>forcepmkid</code> o <code>chanhop</code> se gestionan desde la terminal.
-        Usa <code>settings</code> para consultar la configuración disponible en tu compilación
-        y <code>help</code> para verificar sintaxis.
+        Advanced settings like <code>forcepmkid</code> or <code>chanhop</code> are managed from the terminal.
+        Use <code>settings</code> to check the configuration available in your build
+        and <code>help</code> to verify syntax.
       </div>
     </section>
     <div id="message" role="alert"></div>
@@ -306,299 +306,299 @@ select{background:#0a121a;border:1px solid var(--line);border-radius:6px;padding
 'use strict';
 
 /* ============================================================
-   Helpers de UI y utilidades
+   UI helpers and utilities
    ============================================================ */
 const $ = id => document.getElementById(id);
 const quote = s => '"' + String(s).replace(/(["\\$`])/g, '\\$1') + '"';
 const quoteArgument = quote;
 
-/* Construye una entrada "directa": un botón que envía un comando
-   sin parámetros extra. */
+/* Builds a "direct" entry: a button that sends a command
+   with no extra parameters. */
 const direct = (label, command = label, note = '', risk = false) =>
   ({ label, command, note, risk });
 
-/* Construye la descripción de un campo del editor de parámetros. */
+/* Builds the description of a field in the parameter editor. */
 const field = (label, type = 'text', extra = {}) => ({ label, type, ...extra });
 const selectField = (label, options) => ({ label, type: 'select', options });
-const idx = (label = 'Índice') => field(label, 'number', { min: 0, max: 65535 });
+const idx = (label = 'Index') => field(label, 'number', { min: 0, max: 65535 });
 
-/* Construye una entrada "configurable": el botón abre el editor
-   para que el usuario rellene los campos. */
+/* Builds a "configurable" entry: the button opens the editor
+   so the user can fill in the fields. */
 const configured = (label, template, fields, build, note = '', risk = false) =>
   ({ label, template, fields, build, note, risk });
 
 /* ============================================================
-   MENÚ — verificado contra la salida real de `help`
-   del firmware Marauder v1.16.0.
+   MENU: verified against the actual `help` output
+   of the Marauder v1.16.0 firmware.
    ============================================================ */
 const MENU = {
   WiFi: {
-    'Inicio rápido': [
-      direct('recon wifi',   'recon wifi',   'Arranca el escaneo WiFi completo. Equivale a "Start WiFi" en la pantalla física.'),
-      direct('recon ble',    'recon ble',    'Arranca el escaneo Bluetooth. Equivale a "Start BLE" en la pantalla física.'),
-      direct('recon status', 'recon status', 'Muestra el estado actual del reconocimiento.'),
-      direct('recon stop',   'recon stop',   'Detiene cualquier reconocimiento en curso.'),
-      direct('scanall',      'scanall',      'Escaneo WiFi directo: APs + estaciones.'),
-      direct('wardrive',     'wardrive',     'Inicia wardriving con GPS. Requiere módulo GPS conectado.'),
-      direct('stopscan',     'stopscan',     'Detiene el escaneo activo (WiFi, BLE o sniffer).')
+    'Quick start': [
+      direct('recon wifi',   'recon wifi',   'Starts the full WiFi scan. Equivalent to "Start WiFi" on the physical screen.'),
+      direct('recon ble',    'recon ble',    'Starts the Bluetooth scan. Equivalent to "Start BLE" on the physical screen.'),
+      direct('recon status', 'recon status', 'Shows the current recon status.'),
+      direct('recon stop',   'recon stop',   'Stops any recon in progress.'),
+      direct('scanall',      'scanall',      'Direct WiFi scan: APs + stations.'),
+      direct('wardrive',     'wardrive',     'Starts wardriving with GPS. Requires a connected GPS module.'),
+      direct('stopscan',     'stopscan',     'Stops the active scan (WiFi, BLE, or sniffer).')
     ],
     Sniffers: [
-      direct('sniffbeacon',   'sniffbeacon',   'Captura beacons WiFi de todos los APs cercanos.'),
-      direct('sniffprobe',    'sniffprobe',    'Captura probe requests de dispositivos cercanos.'),
-      direct('sniffdeauth',   'sniffdeauth',   'Detecta tramas de desautenticación (posible ataque).'),
-      configured('sniffpmkid', 'sniffpmkid [-c <canal>] [-d] [-l]', [
-        { ...idx('Canal (opcional)'), optional: true },
-        selectField('Flags', [['', 'Ninguno'], ['-d', 'Solo deauth'], ['-l', 'Solo PMKID']])
+      direct('sniffbeacon',   'sniffbeacon',   'Captures WiFi beacons from all nearby APs.'),
+      direct('sniffprobe',    'sniffprobe',    'Captures probe requests from nearby devices.'),
+      direct('sniffdeauth',   'sniffdeauth',   'Detects deauthentication frames (possible attack).'),
+      configured('sniffpmkid', 'sniffpmkid [-c <channel>] [-d] [-l]', [
+        { ...idx('Channel (optional)'), optional: true },
+        selectField('Flags', [['', 'None'], ['-d', 'Deauth only'], ['-l', 'PMKID only']])
       ], v => 'sniffpmkid' + (v[0] ? ' -c ' + v[0] : '') + (v[1] ? ' ' + v[1] : ''),
-        'Requiere forcepmkid activo: settings -s forcepmkid enable.'),
-      direct('sniffraw',      'sniffraw',      'Volcado crudo de tramas WiFi (modo promiscuo).'),
-      direct('sniffpwn',      'sniffpwn',      'Modo Pwnagotchi: captura handshakes y PMKID automáticamente.'),
-      direct('sniffpinescan', 'sniffpinescan', 'Modo Pineapple: simula SSIDs conocidos para forzar handshakes.'),
-      direct('sniffmultissid','sniffmultissid','Sniffer multi-SSID.'),
-      direct('sniffsae',      'sniffsae',      'Captura tramas SAE (WPA3).'),
-      direct('packetcount',   'packetcount',   'Cuenta paquetes por tipo y canal. Ideal para análisis rápido.')
+        'Requires forcepmkid enabled: settings -s forcepmkid enable.'),
+      direct('sniffraw',      'sniffraw',      'Raw dump of WiFi frames (promiscuous mode).'),
+      direct('sniffpwn',      'sniffpwn',      'Pwnagotchi mode: captures handshakes and PMKID automatically.'),
+      direct('sniffpinescan', 'sniffpinescan', 'Pineapple mode: mimics known SSIDs to force handshakes.'),
+      direct('sniffmultissid','sniffmultissid','Multi-SSID sniffer.'),
+      direct('sniffsae',      'sniffsae',      'Captures SAE frames (WPA3).'),
+      direct('packetcount',   'packetcount',   'Counts packets by type and channel. Ideal for quick analysis.')
     ],
     Scanners: [
-      direct('pingscan',      'pingscan',      'Escaneo de red local por ICMP (requiere estar conectado a un AP).'),
+      direct('pingscan',      'pingscan',      'Local network scan via ICMP (requires being connected to an AP).'),
       configured('arpscan',   'arpscan [-f]',  [
-        selectField('Modo', [['', 'Normal'], ['-f', 'Forzado']])
+        selectField('Mode', [['', 'Normal'], ['-f', 'Forced']])
       ], v => 'arpscan' + (v[0] ? ' ' + v[0] : ''),
-        'Descubre hosts en la red local por ARP.'),
-      configured('portscan IP', 'portscan -a -t <índice>', [
-        idx('Índice IP (list -i)')
+        'Discovers hosts on the local network via ARP.'),
+      configured('portscan IP', 'portscan -a -t <index>', [
+        idx('IP index (list -i)')
       ], v => 'portscan -a -t ' + v[0],
-        'Escanea todos los puertos de una IP. Requiere estar conectado a un AP.'),
-      direct('portscan ssh',   'portscan -s ssh',    'Escaneo del puerto SSH en la red local.'),
-      direct('portscan telnet','portscan -s telnet', 'Escaneo del puerto Telnet.'),
-      direct('portscan smtp',  'portscan -s smtp',   'Escaneo del puerto SMTP.'),
-      direct('portscan dns',   'portscan -s dns',    'Escaneo del puerto DNS.'),
-      direct('portscan http',  'portscan -s http',   'Escaneo del puerto HTTP.'),
-      direct('portscan https', 'portscan -s https',  'Escaneo del puerto HTTPS.'),
-      direct('portscan rdp',   'portscan -s rdp',    'Escaneo del puerto RDP.')
+        'Scans all ports of an IP. Requires being connected to an AP.'),
+      direct('portscan ssh',   'portscan -s ssh',    'SSH port scan on the local network.'),
+      direct('portscan telnet','portscan -s telnet', 'Telnet port scan.'),
+      direct('portscan smtp',  'portscan -s smtp',   'SMTP port scan.'),
+      direct('portscan dns',   'portscan -s dns',    'DNS port scan.'),
+      direct('portscan http',  'portscan -s http',   'HTTP port scan.'),
+      direct('portscan https', 'portscan -s https',  'HTTPS port scan.'),
+      direct('portscan rdp',   'portscan -s rdp',    'RDP port scan.')
     ],
     Attacks: [
       configured('attack quiet',   'attack -t quiet', [
-        selectField('Modo', [['quiet','Quiet'],['csa','CSA'],['sae','SAE']])
-      ], v => 'attack -t ' + v[0], 'Ataques de canal. Verifica la sintaxis con help.', true),
+        selectField('Mode', [['quiet','Quiet'],['csa','CSA'],['sae','SAE']])
+      ], v => 'attack -t ' + v[0], 'Channel attacks. Verify the syntax with help.', true),
       configured('attack beacon',  'attack -t beacon [-l/-r/-a]', [
-        selectField('Origen', [['-r','Aleatorio'],['-l','Lista SSID'],['-a','Lista AP']])
-      ], v => 'attack -t beacon ' + v[0], 'Spam de beacons con SSIDs falsos.', true),
+        selectField('Source', [['-r','Random'],['-l','SSID list'],['-a','AP list']])
+      ], v => 'attack -t beacon ' + v[0], 'Beacon spam with fake SSIDs.', true),
       configured('attack deauth',  'attack -t deauth [-c] [-s <src>] [-d <dst>]', [
-        selectField('Modo', [['','Por lista'],['-c','Broadcast']])
+        selectField('Mode', [['','By list'],['-c','Broadcast']])
       ], v => 'attack -t deauth' + (v[0] ? ' ' + v[0] : ''),
-        'Requiere objetivos seleccionados previamente o modo broadcast.', true),
-      direct('attack probe',     'attack -t probe',     'Spam de probe requests con SSIDs conocidos.', true),
-      direct('attack rickroll',  'attack -t rickroll',  'Beacons con el SSID de Rick Astley. Clásico.', true),
+        'Requires previously selected targets or broadcast mode.', true),
+      direct('attack probe',     'attack -t probe',     'Probe request spam with known SSIDs.', true),
+      direct('attack rickroll',  'attack -t rickroll',  'Beacons with the Rick Astley SSID. A classic.', true),
       configured('attack badmsg', 'attack -t badmsg [-c]', [
-        selectField('Modo', [['','Normal'],['-c','Continuo']])
+        selectField('Mode', [['','Normal'],['-c','Continuous']])
       ], v => 'attack -t badmsg' + (v[0] ? ' ' + v[0] : ''),
-        'Inyecta tramas malformadas. Usar con cuidado.', true),
+        'Injects malformed frames. Use with caution.', true),
       configured('attack sleep',  'attack -t sleep [-c]', [
-        selectField('Modo', [['','Normal'],['-c','Continuo']])
+        selectField('Mode', [['','Normal'],['-c','Continuous']])
       ], v => 'attack -t sleep' + (v[0] ? ' ' + v[0] : ''),
-        'Ataque de asociación sleep para forzar reconexiones.', true),
+        'Sleep association attack to force reconnections.', true),
       configured('evilportal',    'evilportal -c start [-w html.html]', [
-        { ...field('Archivo HTML', 'text', { placeholder: 'ej: portal.html' }), optional: true }
+        { ...field('HTML file', 'text', { placeholder: 'e.g. portal.html' }), optional: true }
       ], v => 'evilportal -c start' + (v[0] ? ' -w ' + v[0] : ''),
-        'Levanta un portal cautivo. El HTML debe estar en la SD.', true),
-      configured('karma', 'karma -p <índice>', [
-        idx('Índice SSID/probe (list -p)')
+        'Spins up a captive portal. The HTML must be on the SD card.', true),
+      configured('karma', 'karma -p <index>', [
+        idx('SSID/probe index (list -p)')
       ], v => 'karma -p ' + v[0],
-        'Responde a probe requests con SSIDs conocidos.', true)
+        'Responds to probe requests with known SSIDs.', true)
     ],
     General: [
       configured('clearlist', 'clearlist -a/-c/-s', [
-        selectField('Lista', [['-a','APs'],['-c','Estaciones'],['-s','SSIDs']])
-      ], v => 'clearlist ' + v[0], 'Borra listas internas del firmware.'),
-      configured('select', 'select -a/-s/-c <índice>', [
-        selectField('Lista', [['-a','AP'],['-s','SSID'],['-c','Estación']]),
-        idx('Índice (o varios separados por coma)')
+        selectField('List', [['-a','APs'],['-c','Stations'],['-s','SSIDs']])
+      ], v => 'clearlist ' + v[0], 'Clears internal firmware lists.'),
+      configured('select', 'select -a/-s/-c <index>', [
+        selectField('List', [['-a','AP'],['-s','SSID'],['-c','Station']]),
+        idx('Index (or several separated by commas)')
       ], v => 'select ' + v[0] + ' ' + v[1],
-        'Marca objetivos. Acepta varios índices separados por coma.'),
-      configured('info -a', 'info -a <índice>', [
-        idx('Índice AP (list -a)')
-      ], v => 'info -a ' + v[0], 'Info detallada de un AP concreto.'),
-      configured('join', 'join -a <índice> -p <contraseña>', [
-        idx('Índice AP (list -a)'),
-        field('Contraseña', 'password')
+        'Marks targets. Accepts multiple indexes separated by commas.'),
+      configured('info -a', 'info -a <index>', [
+        idx('AP index (list -a)')
+      ], v => 'info -a ' + v[0], 'Detailed info for a specific AP.'),
+      configured('join', 'join -a <index> -p <password>', [
+        idx('AP index (list -a)'),
+        field('Password', 'password')
       ], v => 'join -a ' + v[0] + ' -p ' + quote(v[1]),
-        'La respuesta del firmware puede mostrar la contraseña; revisa el log antes de compartirlo.'),
-      direct('join -s', 'join -s', 'Conecta a una red guardada previamente.'),
-      direct('randapmac',   'randapmac',   'MAC aleatoria para el AP.'),
-      direct('randstamac',  'randstamac',  'MAC aleatoria para la estación.'),
-      configured('cloneapmac', 'cloneapmac [-a <índice>]', [
-        { ...idx('Índice AP (opcional)'), optional: true }
+        'The firmware response may show the password; review the log before sharing it.'),
+      direct('join -s', 'join -s', 'Connects to a previously saved network.'),
+      direct('randapmac',   'randapmac',   'Random MAC for the AP.'),
+      direct('randstamac',  'randstamac',  'Random MAC for the station.'),
+      configured('cloneapmac', 'cloneapmac [-a <index>]', [
+        { ...idx('AP index (optional)'), optional: true }
       ], v => 'cloneapmac' + (v[0] ? ' -a ' + v[0] : ''),
-        'Clona la MAC de un AP de la lista.'),
-      configured('clonestamac', 'clonestamac [-s <índice>]', [
-        { ...idx('Índice estación (opcional)'), optional: true }
+        'Clones the MAC of an AP from the list.'),
+      configured('clonestamac', 'clonestamac [-s <index>]', [
+        { ...idx('Station index (optional)'), optional: true }
       ], v => 'clonestamac' + (v[0] ? ' -s ' + v[0] : ''),
-        'Clona la MAC de una estación de la lista.'),
-      configured('add AP', 'add -a -b <mac> [-ch <canal>] [-e <ssid>]', [
+        'Clones the MAC of a station from the list.'),
+      configured('add AP', 'add -a -b <mac> [-ch <channel>] [-e <ssid>]', [
         field('MAC', 'text', { placeholder: 'AA:BB:CC:DD:EE:FF' }),
-        { ...idx('Canal (opcional)'), optional: true },
-        { ...field('SSID (opcional)'), optional: true }
+        { ...idx('Channel (optional)'), optional: true },
+        { ...field('SSID (optional)'), optional: true }
       ], v => 'add -a -b ' + v[0] + (v[1] ? ' -ch ' + v[1] : '') + (v[2] ? ' -e ' + v[2] : ''),
-        'Añade un AP manual a la lista.'),
-      configured('add estación', 'add -c -b <mac> -ap <ap_index>', [
-        field('MAC estación', 'text', { placeholder: 'AA:BB:CC:DD:EE:FF' }),
-        idx('Índice AP')
+        'Adds a manual AP to the list.'),
+      configured('add station', 'add -c -b <mac> -ap <ap_index>', [
+        field('Station MAC', 'text', { placeholder: 'AA:BB:CC:DD:EE:FF' }),
+        idx('AP index')
       ], v => 'add -c -b ' + v[0] + ' -ap ' + v[1],
-        'Añade manualmente una estación a un AP.'),
+        'Manually adds a station to an AP.'),
       configured('ssid -a', 'ssid -a [-g <count>/-n <name>]', [
-        { ...idx('Cantidad (opcional)'), optional: true },
-        { ...field('Nombre base (opcional)'), optional: true }
+        { ...idx('Count (optional)'), optional: true },
+        { ...field('Base name (optional)'), optional: true }
       ], v => 'ssid -a' + (v[0] ? ' -g ' + v[0] : '') + (v[1] ? ' -n ' + v[1] : ''),
-        'Genera SSIDs aleatorios.'),
-      configured('ssid -r', 'ssid -r <índice>', [
-        idx('Índice SSID')
-      ], v => 'ssid -r ' + v[0], 'Borra un SSID de la lista.'),
+        'Generates random SSIDs.'),
+      configured('ssid -r', 'ssid -r <index>', [
+        idx('SSID index')
+      ], v => 'ssid -r ' + v[0], 'Removes an SSID from the list.'),
       configured('save', 'save -a/-s', [
-        selectField('Guardar', [['-a','APs'],['-s','SSIDs']])
-      ], v => 'save ' + v[0], 'Guarda la lista actual en SPIFFS.'),
+        selectField('Save', [['-a','APs'],['-s','SSIDs']])
+      ], v => 'save ' + v[0], 'Saves the current list to SPIFFS.'),
       configured('load', 'load -a/-s', [
-        selectField('Cargar', [['-a','APs'],['-s','SSIDs']])
-      ], v => 'load ' + v[0], 'Carga la lista guardada en SPIFFS.'),
-      configured('channel', 'channel -s <canal>', [
-        idx('Canal (1-14)')
-      ], v => 'channel -s ' + v[0], 'Cambia el canal WiFi activo.'),
+        selectField('Load', [['-a','APs'],['-s','SSIDs']])
+      ], v => 'load ' + v[0], 'Loads the saved list from SPIFFS.'),
+      configured('channel', 'channel -s <channel>', [
+        idx('Channel (1-14)')
+      ], v => 'channel -s ' + v[0], 'Changes the active WiFi channel.'),
       configured('settings', 'settings -s <setting> enable/disable', [
-        field('Ajuste', 'text', { placeholder: 'ej: forcepmkid' }),
-        selectField('Estado', [['enable','Enable'],['disable','Disable']])
+        field('Setting', 'text', { placeholder: 'e.g. forcepmkid' }),
+        selectField('State', [['enable','Enable'],['disable','Disable']])
       ], v => 'settings -s ' + v[0] + ' ' + v[1],
-        'Cambia ajustes internos del firmware.'),
-      direct('settings -r', 'settings -r', 'Reinicia la configuración a valores por defecto.'),
-      direct('mactrack',    'mactrack',    'Sigue una MAC concreta a través de los canales.'),
+        'Changes internal firmware settings.'),
+      direct('settings -r', 'settings -r', 'Resets the configuration to default values.'),
+      direct('mactrack',    'mactrack',    'Tracks a specific MAC across channels.'),
       configured('led', 'led -s <hex>/-p <rainbow>', [
-        selectField('Modo', [['-p','Rainbow'],['-s','Color fijo']]),
-        { ...field('Color hex (si aplica)', 'text', { placeholder: 'FF00AA' }), optional: true }
+        selectField('Mode', [['-p','Rainbow'],['-s','Fixed color']]),
+        { ...field('Hex color (if applicable)', 'text', { placeholder: 'FF00AA' }), optional: true }
       ], v => v[0] === '-p' ? 'led -p' : 'led -s ' + v[1],
-        'Controla el LED RGB del dispositivo.')
+        'Controls the device RGB LED.')
     ],
-    Listas: [
-      direct('list -a', 'list -a', 'Lista de APs detectados.'),
-      direct('list -c', 'list -c', 'Lista de estaciones (clientes) detectadas.'),
-      direct('list -i', 'list -i', 'Lista de IPs descubiertas en la red.'),
-      direct('list -p', 'list -p', 'Lista de SSIDs de probe requests capturados.'),
-      direct('list -s', 'list -s', 'Lista de SSIDs guardados.'),
-      direct('list -t', 'list -t', 'Lista de estaciones por tipo.'),
-      direct('list -b', 'list -b', 'Lista de dispositivos Bluetooth detectados.'),
-      direct('list -f', 'list -f', 'Lista de dispositivos Flipper detectados.'),
-      direct('list -x', 'list -x', 'Lista extendida.'),
-      direct('list -m', 'list -m', 'Lista de dispositivos multi-SSID.')
+    Lists: [
+      direct('list -a', 'list -a', 'List of detected APs.'),
+      direct('list -c', 'list -c', 'List of detected stations (clients).'),
+      direct('list -i', 'list -i', 'List of IPs discovered on the network.'),
+      direct('list -p', 'list -p', 'List of SSIDs from captured probe requests.'),
+      direct('list -s', 'list -s', 'List of saved SSIDs.'),
+      direct('list -t', 'list -t', 'List of stations by type.'),
+      direct('list -b', 'list -b', 'List of detected Bluetooth devices.'),
+      direct('list -f', 'list -f', 'List of detected Flipper devices.'),
+      direct('list -x', 'list -x', 'Extended list.'),
+      direct('list -m', 'list -m', 'List of multi-SSID devices.')
     ]
   },
   Bluetooth: {
     Sniffers: [
-      direct('sniffbt',          'sniffbt',            'Escaneo Bluetooth clásico. Muestra MAC y RSSI.'),
-      direct('sniffbt airtag',   'sniffbt -t airtag',  'Detecta AirTags cercanos.'),
-      direct('sniffbt flipper',  'sniffbt -t flipper', 'Detecta Flippers Zero cercanos.'),
-      direct('sniffbt flock',    'sniffbt -t flock',   'Detecta cámaras Flock. Genera /flock_N.pcap en la SD.'),
-      direct('sniffbt meta',     'sniffbt -t meta',    'Detecta dispositivos Meta (Ray-Ban).'),
-      direct('sniffskim',        'sniffskim',          'Detecta skimmers Bluetooth en cajeros y terminales.'),
-      configured('findmy', 'findmy -t <índice>', [
-        idx('Índice FindMy/AirTag (list -b)')
+      direct('sniffbt',          'sniffbt',            'Classic Bluetooth scan. Shows MAC and RSSI.'),
+      direct('sniffbt airtag',   'sniffbt -t airtag',  'Detects nearby AirTags.'),
+      direct('sniffbt flipper',  'sniffbt -t flipper', 'Detects nearby Flipper Zeros.'),
+      direct('sniffbt flock',    'sniffbt -t flock',   'Detects Flock cameras. Generates /flock_N.pcap on the SD card.'),
+      direct('sniffbt meta',     'sniffbt -t meta',    'Detects Meta devices (Ray-Ban).'),
+      direct('sniffskim',        'sniffskim',          'Detects Bluetooth skimmers on ATMs and terminals.'),
+      configured('findmy', 'findmy -t <index>', [
+        idx('FindMy/AirTag index (list -b)')
       ], v => 'findmy -t ' + v[0],
-        'Rastrea un AirTag/FindMy previamente detectado con sniffbt.'),
-      direct('list -b', 'list -b', 'Lista los dispositivos Bluetooth detectados hasta ahora.'),
-      direct('list -f', 'list -f', 'Lista los Flippers detectados hasta ahora.')
+        'Tracks an AirTag/FindMy previously detected with sniffbt.'),
+      direct('list -b', 'list -b', 'Lists the Bluetooth devices detected so far.'),
+      direct('list -f', 'list -f', 'Lists the Flippers detected so far.')
     ],
     Attacks: [
-      direct('blespam all',       'blespam -t all',       '⚠ Puede crashear el ESP32 en v1.16.0 (Guru Meditation + reboot). Si ocurre, el dispositivo se reinicia solo. Se detiene con stopscan.', true),
-      direct('blespam sourapple', 'blespam -t sourapple', 'Spam SourApple (popups en dispositivos Apple).', true),
-      direct('blespam applejuice','blespam -t applejuice','Spam AppleJuice (popups iOS/macOS).', true),
-      direct('blespam google',    'blespam -t google',    'Spam Google (popups Android/ChromeOS).', true),
-      direct('blespam samsung',   'blespam -t samsung',   'Spam Samsung (popups Galaxy).', true),
-      direct('blespam windows',   'blespam -t windows',   'Spam SwiftPair (popups Windows).', true),
-      direct('blespam flipper',   'blespam -t flipper',   'Spam Flipper (popups en Flippers Zero).', true),
-      configured('spoofat', 'spoofat -t <índice>', [
-        idx('Índice AirTag (list -b)')
+      direct('blespam all',       'blespam -t all',       '⚠ May crash the ESP32 on v1.16.0 (Guru Meditation + reboot). If it happens, the device reboots on its own. Stop it with stopscan.', true),
+      direct('blespam sourapple', 'blespam -t sourapple', 'SourApple spam (popups on Apple devices).', true),
+      direct('blespam applejuice','blespam -t applejuice','AppleJuice spam (iOS/macOS popups).', true),
+      direct('blespam google',    'blespam -t google',    'Google spam (Android/ChromeOS popups).', true),
+      direct('blespam samsung',   'blespam -t samsung',   'Samsung spam (Galaxy popups).', true),
+      direct('blespam windows',   'blespam -t windows',   'SwiftPair spam (Windows popups).', true),
+      direct('blespam flipper',   'blespam -t flipper',   'Flipper spam (popups on Flipper Zeros).', true),
+      configured('spoofat', 'spoofat -t <index>', [
+        idx('AirTag index (list -b)')
       ], v => 'spoofat -t ' + v[0],
-        'Suplanta un AirTag detectado previamente.', true)
+        'Spoofs a previously detected AirTag.', true)
     ],
     'Fox Hunt': [
-      configured('foxhunt', 'foxhunt <modo> <índice(s)>', [
-        selectField('Modo', [
-          ['-b','Bluetooth (1 índice)'],
-          ['-t','FindMy (1 índice)'],
-          ['-f','Flipper (1 índice)'],
-          ['-p','Pineapple (1 índice)'],
-          ['-m','Multi-SSID (1 índice)'],
-          ['-w','AP WiFi (1 índice AP)'],
-          ['-s','Estación WiFi (AP + estación)']
+      configured('foxhunt', 'foxhunt <mode> <index(es)>', [
+        selectField('Mode', [
+          ['-b','Bluetooth (1 index)'],
+          ['-t','FindMy (1 index)'],
+          ['-f','Flipper (1 index)'],
+          ['-p','Pineapple (1 index)'],
+          ['-m','Multi-SSID (1 index)'],
+          ['-w','WiFi AP (1 AP index)'],
+          ['-s','WiFi station (AP + station)']
         ]),
-        idx('Índice 1'),
-        { ...idx('Índice 2 (solo para -s)'), optional: true }
+        idx('Index 1'),
+        { ...idx('Index 2 (only for -s)'), optional: true }
       ], v => {
-        const modo = v[0];
+        const mode = v[0];
         const i1 = v[1];
         const i2 = v[2];
-        if (!modo) throw new Error('Elige un modo.');
-        if (!i1) throw new Error('Falta el primer índice.');
-        if (modo === '-s') {
-          if (!i2) throw new Error('El modo -s requiere AP + estación.');
+        if (!mode) throw new Error('Choose a mode.');
+        if (!i1) throw new Error('Missing the first index.');
+        if (mode === '-s') {
+          if (!i2) throw new Error('Mode -s requires AP + station.');
           return 'foxhunt -s ' + i1 + ' ' + i2;
         }
-        return 'foxhunt ' + modo + ' ' + i1;
-      }, 'Localiza un dispositivo concreto. Los índices vienen de las listas correspondientes.')
+        return 'foxhunt ' + mode + ' ' + i1;
+      }, 'Locates a specific device. The indexes come from the corresponding lists.')
     ]
   },
   GPS: [
-    direct('gpsdata',  'gpsdata',  'Lectura puntual del GPS en formato texto.'),
-    direct('nmea',     'nmea',     'Stream NMEA continuo hasta stopscan.'),
-    configured('gps', 'gps [-t] [-g] <tipo>', [
-      selectField('Tipo', [
+    direct('gpsdata',  'gpsdata',  'One-off GPS reading in text format.'),
+    direct('nmea',     'nmea',     'Continuous NMEA stream until stopscan.'),
+    configured('gps', 'gps [-t] [-g] <type>', [
+      selectField('Type', [
         ['fix','Fix'],
-        ['sat','Satélites'],
-        ['lon','Longitud'],
-        ['lat','Latitud'],
-        ['alt','Altitud'],
-        ['date','Fecha'],
-        ['accuracy','Precisión'],
-        ['text','Texto'],
+        ['sat','Satellites'],
+        ['lon','Longitude'],
+        ['lat','Latitude'],
+        ['alt','Altitude'],
+        ['date','Date'],
+        ['accuracy','Accuracy'],
+        ['text','Text'],
         ['nmea','NMEA']
       ])
-    ], v => 'gps ' + v[0], 'Consulta puntual de un dato GPS concreto.'),
+    ], v => 'gps ' + v[0], 'One-off query of a specific GPS value.'),
     configured('gpstracker', 'gpstracker -c <start/stop>', [
-      selectField('Acción', [['start','Iniciar'],['stop','Detener']])
+      selectField('Action', [['start','Start'],['stop','Stop']])
     ], v => 'gpstracker -c ' + v[0],
-      'Wardriving continuo: guarda cada AP con coordenadas GPS.'),
+      'Continuous wardriving: saves each AP with GPS coordinates.'),
     configured('gpspoi', 'gpspoi -s/-m/-e', [
-      selectField('Acción', [['-s','Start'],['-m','Mark'],['-e','End']])
-    ], v => 'gpspoi ' + v[0], 'Marca puntos de interés durante el wardriving.'),
-    direct('wardrive',    'wardrive',    'Inicia wardriving con el GPS conectado.'),
+      selectField('Action', [['-s','Start'],['-m','Mark'],['-e','End']])
+    ], v => 'gpspoi ' + v[0], 'Marks points of interest during wardriving.'),
+    direct('wardrive',    'wardrive',    'Starts wardriving with the connected GPS.'),
     configured('wardrivepoi', 'wardrivepoi [label]', [
-      { ...field('Etiqueta del POI (opcional)'), optional: true }
+      { ...field('POI label (optional)'), optional: true }
     ], v => 'wardrivepoi' + (v[0] ? ' ' + v[0] : ''),
-      'Añade un punto de interés durante el wardriving.')
+      'Adds a point of interest during wardriving.')
   ],
   'Device & Settings': [
-    direct('info',       'info',       'Muestra versión del firmware y configuración general.'),
-    direct('protocolinfo', 'protocolinfo', 'Información del protocolo de comunicación con la GUI.'),
-    direct('reboot',     'reboot',     'Reinicia el ESP32.'),
-    configured('ls', 'ls <directorio>', [
-      { ...field('Directorio', 'text', { placeholder: '/' }), optional: true }
-    ], v => 'ls ' + (v[0] || '/'), 'Lista archivos de la SD o SPIFFS.'),
+    direct('info',       'info',       'Shows the firmware version and general configuration.'),
+    direct('protocolinfo', 'protocolinfo', 'Information about the GUI communication protocol.'),
+    direct('reboot',     'reboot',     'Reboots the ESP32.'),
+    configured('ls', 'ls <directory>', [
+      { ...field('Directory', 'text', { placeholder: '/' }), optional: true }
+    ], v => 'ls ' + (v[0] || '/'), 'Lists files on the SD card or SPIFFS.'),
     configured('brightness', 'brightness [-c cycle] [-s <0-9>]', [
-      selectField('Modo', [['-s','Nivel fijo'],['-c','Ciclo automático']]),
-      { ...field('Nivel (0-9)', 'number', { min: 0, max: 9 }), optional: true }
+      selectField('Mode', [['-s','Fixed level'],['-c','Automatic cycle']]),
+      { ...field('Level (0-9)', 'number', { min: 0, max: 9 }), optional: true }
     ], v => v[0] === '-c' ? 'brightness -c cycle' : 'brightness -s ' + v[1],
-      'Controla el brillo de la pantalla TFT.'),
+      'Controls the brightness of the TFT screen.'),
     configured('update', 'update -s/-w', [
-  selectField('Origen', [['-s','Desde SD'],['-w','Desde web (OTA)']])
-], v => 'update ' + v[0], 'Actualiza el firmware. No usar sin leer la wiki.', true),
-    direct('backupspiffs', 'backupspiffs',  'Copia SPIFFS a /spiffs en la SD.'),
-    direct('backupstatus','backupstatus', 'Inspecciona /spiffs en la SD.'),
-    direct('restorespiffs','restorespiffs','Restaura SPIFFS desde la SD.'),
-    configured('channel', 'channel -s <canal>', [
-      idx('Canal (1-14)')
-    ], v => 'channel -s ' + v[0], 'Cambia el canal WiFi activo.'),
-    configured('settings', 'settings -s <ajuste> enable/disable', [
-      field('Ajuste', 'text', { placeholder: 'ej: forcepmkid' }),
-      selectField('Estado', [['enable','Enable'],['disable','Disable']])
-    ], v => 'settings -s ' + v[0] + ' ' + v[1], 'Activa/desactiva un ajuste interno.'),
-    direct('settings -r', 'settings -r', 'Resetea toda la configuración a valores por defecto.'),
-    direct('help',       'help',       'Lista todos los comandos soportados por el firmware.')
+  selectField('Source', [['-s','From SD'],['-w','From web (OTA)']])
+], v => 'update ' + v[0], 'Updates the firmware. Do not use without reading the wiki.', true),
+    direct('backupspiffs', 'backupspiffs',  'Copies SPIFFS to /spiffs on the SD card.'),
+    direct('backupstatus','backupstatus', 'Inspects /spiffs on the SD card.'),
+    direct('restorespiffs','restorespiffs','Restores SPIFFS from the SD card.'),
+    configured('channel', 'channel -s <channel>', [
+      idx('Channel (1-14)')
+    ], v => 'channel -s ' + v[0], 'Changes the active WiFi channel.'),
+    configured('settings', 'settings -s <setting> enable/disable', [
+      field('Setting', 'text', { placeholder: 'e.g. forcepmkid' }),
+      selectField('State', [['enable','Enable'],['disable','Disable']])
+    ], v => 'settings -s ' + v[0] + ' ' + v[1], 'Enables/disables an internal setting.'),
+    direct('settings -r', 'settings -r', 'Resets the entire configuration to default values.'),
+    direct('help',       'help',       'Lists all commands supported by the firmware.')
   ]
 };
 </script>
@@ -606,7 +606,7 @@ const MENU = {
 'use strict';
 
 /* ============================================================
-   Estado global
+   Global state
    ============================================================ */
 let port = null;
 let reader = null;
@@ -621,7 +621,7 @@ let historyPos = 0;
 const decoder = new TextDecoder('utf-8', { fatal: false });
 
 /* ============================================================
-   Terminal y estadísticas
+   Terminal and statistics
    ============================================================ */
 const CRASH_PATTERNS = [/Guru Meditation Error/i, /^Rebooting\.\.\./m];
 function addTerminal(text, kind = '') {
@@ -634,7 +634,7 @@ function addTerminal(text, kind = '') {
   if (CRASH_PATTERNS.some(re => re.test(text))) {
     const warn = document.createElement('span');
     warn.className = 'err';
-    warn.textContent = '\n[!] El dispositivo se reinició (posible crash del firmware). Verifica el estado antes de enviar más comandos.\n';
+    warn.textContent = '\n[!] The device rebooted (possible firmware crash). Check the state before sending more commands.\n';
     t.append(warn);
     if ($('autoscroll').checked) t.scrollTop = t.scrollHeight;
   }
@@ -646,17 +646,17 @@ function refreshStats() {
     : (rxBytes / 1024).toFixed(1) + ' KiB';
   $('session').textContent = started
     ? Math.floor((Date.now() - started) / 1000) + ' s'
-    : 'Sin conexión';
+    : 'Not connected';
 }
 setInterval(refreshStats, 1000);
 
 /* ============================================================
-   Estado de conexión
+   Connection status
    ============================================================ */
 function setStatus(online, text) {
   $('status').classList.toggle('online', online);
   $('stateText').textContent = text;
-  $('connect').textContent = online ? 'Desconectar' : 'Conectar USB';
+  $('connect').textContent = online ? 'Disconnect' : 'Connect USB';
   $('stop').disabled = !online;
   $('send').disabled = !online;
   $('command').disabled = !online;
@@ -664,7 +664,7 @@ function setStatus(online, text) {
 }
 
 /* ============================================================
-   Render del menú
+   Menu rendering
    ============================================================ */
 function renderMenu(filter = '') {
   const nav = $('groups');
@@ -739,14 +739,14 @@ function renderMenu(filter = '') {
       nav.append(groupDetails);
     }
   }
-  $('menuCount').textContent = visible + ' comandos';
+  $('menuCount').textContent = visible + ' commands';
 }
 
 /* ============================================================
-   Envío de comandos
+   Command sending
    ============================================================ */
 async function sendCommand(cmd, opts = {}) {
-  if (!port || !writer) throw new Error('No hay dispositivo conectado.');
+  if (!port || !writer) throw new Error('No device connected.');
   if (!cmd || !cmd.trim()) return;
   const eol = $('eol').value === 'crlf' ? '\r\n' : '\n';
   const payload = cmd + eol;
@@ -755,7 +755,7 @@ async function sendCommand(cmd, opts = {}) {
 }
 
 /* ============================================================
-   Manejo de acciones del menú
+   Menu action handling
    ============================================================ */
 function handleAction(action) {
   $('message').textContent = '';
@@ -766,13 +766,13 @@ function handleAction(action) {
 }
 
 /* ============================================================
-   Editor de parámetros
+   Parameter editor
    ============================================================ */
 function openEditor(action) {
   currentAction = action;
   $('actionEditor').hidden = false;
   $('actionTitle').textContent = action.label;
-  $('actionHelp').textContent = action.note || 'Completa los parámetros antes de enviar.';
+  $('actionHelp').textContent = action.note || 'Fill in the parameters before sending.';
   $('actionFields').textContent = '';
 
   for (const f of action.fields) {
@@ -821,13 +821,13 @@ function buildCurrent() {
     const f = currentAction.fields[i];
     const v = values[i];
     if (v === '' && !f.optional) {
-      throw new Error('Completa "' + f.label + '".');
+      throw new Error('Fill in "' + f.label + '".');
     }
     if (v !== '' && f.type === 'number') {
       const n = Number(v);
-      if (!Number.isInteger(n)) throw new Error('"' + f.label + '" debe ser un entero.');
-      if (f.min !== undefined && n < f.min) throw new Error('"' + f.label + '" debe ser ≥ ' + f.min + '.');
-      if (f.max !== undefined && n > f.max) throw new Error('"' + f.label + '" debe ser ≤ ' + f.max + '.');
+      if (!Number.isInteger(n)) throw new Error('"' + f.label + '" must be an integer.');
+      if (f.min !== undefined && n < f.min) throw new Error('"' + f.label + '" must be ≥ ' + f.min + '.');
+      if (f.max !== undefined && n > f.max) throw new Error('"' + f.label + '" must be ≤ ' + f.max + '.');
     }
   }
   return validateCommand(currentAction.build(values));
@@ -851,17 +851,17 @@ function closeEditor() {
 }
 
 /* ============================================================
-   Validación final del comando
+   Final command validation
    ============================================================ */
 function validateCommand(cmd) {
-  if (typeof cmd !== 'string' || !cmd.trim()) throw new Error('Comando vacío.');
-  if (cmd.length > 512) throw new Error('Comando demasiado largo (máx 512).');
-  if (/[\r\n]/.test(cmd)) throw new Error('El comando no puede contener saltos de línea.');
+  if (typeof cmd !== 'string' || !cmd.trim()) throw new Error('Empty command.');
+  if (cmd.length > 512) throw new Error('Command too long (max 512).');
+  if (/[\r\n]/.test(cmd)) throw new Error('The command cannot contain line breaks.');
   return cmd.trim();
 }
 
 /* ============================================================
-   Manejo de errores
+   Error handling
    ============================================================ */
 function showError(e) {
   const msg = e?.message || String(e);
@@ -870,7 +870,7 @@ function showError(e) {
 }
 
 /* ============================================================
-   Lectura del puerto serie
+   Serial port reading
    ============================================================ */
 async function readLoop() {
   reading = true;
@@ -894,11 +894,11 @@ async function readLoop() {
 }
 
 /* ============================================================
-   Conexión / desconexión
+   Connection / disconnection
    ============================================================ */
 async function connect() {
   if (!('serial' in navigator)) {
-    throw new Error('Web Serial no está disponible. Usa Chrome/Edge de escritorio y HTTPS o localhost.');
+    throw new Error('Web Serial is not available. Use desktop Chrome/Edge with HTTPS or localhost.');
   }
   port = await navigator.serial.requestPort();
   await port.open({
@@ -908,8 +908,8 @@ async function connect() {
   writer = port.writable.getWriter();
   rxBytes = 0;
   started = Date.now();
-  setStatus(true, 'Conectado');
-  addTerminal('[+] Conectado a 115200 baudios.\n', 'sys');
+  setStatus(true, 'Connected');
+  addTerminal('[+] Connected at 115200 baud.\n', 'sys');
   renderMenu($('menuFilter').value);
   readLoop();
 }
@@ -925,9 +925,9 @@ async function disconnect(user = true) {
     try { await port?.close(); } catch {}
     port = null;
     started = 0;
-    setStatus(false, 'Desconectado');
+    setStatus(false, 'Disconnected');
     renderMenu($('menuFilter').value);
-    if (user) addTerminal('[i] Puerto liberado.\n', 'sys');
+    if (user) addTerminal('[i] Port released.\n', 'sys');
   } finally {
     closing = false;
   }
@@ -1003,9 +1003,9 @@ window.addEventListener('beforeunload', () => {
   try { reader?.cancel(); } catch {}
 });
 
-setStatus(false, 'Desconectado');
+setStatus(false, 'Disconnected');
 renderMenu();
-addTerminal('La salida del equipo aparecerá aquí.\n', 'sys');
+addTerminal('Device output will appear here.\n', 'sys');
 </script>
 </body>
 </html>

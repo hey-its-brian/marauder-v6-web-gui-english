@@ -1,25 +1,25 @@
 # marauder-v6-web-gui
 
-Interfaz web autónoma en español para controlar un **ESP32 Marauder v6.1** mediante **Web Serial a 115200 baudios**. Todo funciona desde `index.html`: sin backend, sin cuentas y sin dependencias de producción.
+Standalone English web interface for controlling an **ESP32 Marauder v6.1** over **Web Serial at 115200 baud**. Everything runs from `index.html`: no backend, no accounts, and no production dependencies.
 
-## Características
+## Features
 
-- Conexión USB mediante Web Serial.
-- Terminal en tiempo real con UTF-8 incremental.
-- Historial de comandos con ↑/↓.
-- LF y CRLF seleccionables.
-- Exportación del log de sesión.
-- Menú jerárquico equivalente al del dispositivo.
-- Separación entre **nombre visible** y **comando enviado** cuando la etiqueta del menú no coincide con la CLI.
-- Formularios para operaciones que requieren parámetros.
-- Validación de índices y rangos antes del envío.
-- Filtro rápido de comandos.
-- Botón fijo `stopscan`.
-- Interfaz responsive para escritorio y pantallas pequeñas.
-- Salida Serial renderizada como texto para evitar interpretar HTML recibido desde el dispositivo.
-- Pruebas automáticas con Playwright y Chromium mediante GitHub Actions.
+- USB connection over Web Serial.
+- Real-time terminal with incremental UTF-8 decoding.
+- Command history with ↑/↓.
+- Selectable LF and CRLF.
+- Session log export.
+- Hierarchical menu matching the one on the device.
+- Separation between the **visible name** and the **command sent** when the menu label does not match the CLI.
+- Forms for operations that require parameters.
+- Index and range validation before sending.
+- Quick command filter.
+- Fixed `stopscan` button.
+- Responsive interface for desktop and small screens.
+- Serial output rendered as text to avoid interpreting HTML received from the device.
+- Automated tests with Playwright and Chromium via GitHub Actions.
 
-## Menú implementado
+## Implemented menu
 
 ### WiFi
 
@@ -57,15 +57,15 @@ Interfaz web autónoma en español para controlar un **ESP32 Marauder v6.1** med
 
 `info`, `reboot`, `ls /`, `brightness`, `settings`
 
-Los ajustes como `forcepmkid` o `chanhop` se pueden activar/desactivar desde la terminal según lo que exponga la compilación instalada.
+Settings like `forcepmkid` or `chanhop` can be enabled/disabled from the terminal depending on what the installed build exposes.
 
-## Etiqueta del menú vs. CLI
+## Menu label vs. CLI
 
-Algunas opciones del dispositivo son nombres de menú y no necesariamente la cadena literal que acepta la CLI. La GUI mantiene ambos conceptos separados.
+Some device options are menu names and not necessarily the literal string the CLI accepts. The GUI keeps both concepts separate.
 
-Ejemplos conocidos para v1.16.0:
+Known examples for v1.16.0:
 
-| Menú | Comando enviado |
+| Menu | Command sent |
 | --- | --- |
 | `pwnagotchi` | `sniffpwn` |
 | `sshescan` | `portscan -s ssh` |
@@ -85,11 +85,11 @@ Ejemplos conocidos para v1.16.0:
 | `tracker start` | `gpstracker -c start` |
 | `tracker stop` | `gpstracker -c stop` |
 
-La GUI muestra debajo de cada opción la cadena que enviará realmente. Para una compilación modificada o un fork, ejecuta `help`, `info` y `settings` y ajusta el mapeo en `MENU` si corresponde.
+The GUI shows, below each option, the string it will actually send. For a modified build or a fork, run `help`, `info`, and `settings` and adjust the mapping in `MENU` if needed.
 
-## Operaciones con parámetros
+## Operations with parameters
 
-La interfaz abre un editor en lugar de enviar una plantilla incompleta para operaciones como:
+The interface opens an editor instead of sending an incomplete template for operations such as:
 
 - `portscan`
 - `karma`
@@ -104,41 +104,41 @@ La interfaz abre un editor en lugar de enviar una plantilla incompleta para oper
 - `findmysound`
 - `brightness`
 
-Los índices deben ser enteros no negativos. `brightness` acepta valores de `0` a `9`.
+Indexes must be non-negative integers. `brightness` accepts values from `0` to `9`.
 
-## Uso local
+## Local use
 
 ```bash
 python -m http.server 8080 --bind 127.0.0.1
 ```
 
-Después abre:
+Then open:
 
 ```text
 http://localhost:8080
 ```
 
-Usa Chrome o Edge de escritorio, conecta el Marauder por un cable USB de datos y pulsa **Conectar USB**.
+Use desktop Chrome or Edge, connect the Marauder with a USB data cable, and click **Connect USB**.
 
-Web Serial requiere un contexto seguro: `localhost` o HTTPS. Cierra Arduino Serial Monitor, esptool, PuTTY u otras aplicaciones que puedan tener abierto el mismo puerto.
+Web Serial requires a secure context: `localhost` or HTTPS. Close Arduino Serial Monitor, esptool, PuTTY, or other applications that might have the same port open.
 
-Configuración de puerto:
+Port configuration:
 
-- 115200 baudios
+- 115200 baud
 - 8 bits
-- sin paridad
-- 1 bit de parada
-- sin control de flujo
+- no parity
+- 1 stop bit
+- no flow control
 
-## Seguridad de la interfaz
+## Interface security
 
-La aplicación utiliza una CSP restrictiva y no carga JavaScript de terceros. Los bytes recibidos por Serial se decodifican y se insertan como texto, no mediante `innerHTML`.
+The application uses a restrictive CSP and does not load third-party JavaScript. Bytes received over Serial are decoded and inserted as text, not through `innerHTML`.
 
-Las opciones de la categoría **Attacks** requieren confirmación explícita antes de enviarse. Utiliza esas funciones únicamente sobre equipos, dispositivos y redes propios o para los que tengas autorización.
+Options in the **Attacks** category require explicit confirmation before being sent. Use those functions only on equipment, devices, and networks you own or are authorized to test.
 
-Las contraseñas usadas con `join` pueden aparecer en la respuesta del firmware y, por lo tanto, quedar almacenadas en el log exportado. Revisa los logs antes de compartirlos.
+Passwords used with `join` may appear in the firmware response and therefore end up stored in the exported log. Review the logs before sharing them.
 
-## Pruebas
+## Tests
 
 ```bash
 npm install --no-save playwright
@@ -146,23 +146,23 @@ npx playwright install chromium
 node tests/browser.cjs
 ```
 
-La suite comprueba:
+The suite checks:
 
-- presencia de todas las opciones del menú;
-- aliases CLI;
-- validación de parámetros;
-- Web Serial a 115200;
-- LF y CRLF;
-- fragmentación UTF-8;
-- protección frente a HTML recibido por Serial;
-- desconexión y reconexión;
-- filtro del menú;
-- diseño responsive.
+- presence of all menu options;
+- CLI aliases;
+- parameter validation;
+- Web Serial at 115200;
+- LF and CRLF;
+- UTF-8 fragmentation;
+- protection against HTML received over Serial;
+- disconnection and reconnection;
+- menu filter;
+- responsive design.
 
-GitHub Actions ejecuta la misma prueba en cada pull request y en los pushes a `main`.
+GitHub Actions runs the same test on every pull request and on pushes to `main`.
 
-## Referencia
+## Reference
 
-El proyecto toma como referencia ESP32 Marauder v1.16.0 y su implementación CLI. El hardware, los módulos GPS/Bluetooth y determinadas funciones dependen de la compilación concreta instalada en el dispositivo.
+The project uses ESP32 Marauder v1.16.0 and its CLI implementation as a reference. The hardware, the GPS/Bluetooth modules, and certain functions depend on the specific build installed on the device.
 
-Proyecto independiente y no afiliado al autor de ESP32 Marauder.
+Independent project, not affiliated with the author of ESP32 Marauder.

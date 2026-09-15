@@ -44,20 +44,20 @@ const path=require('node:path');
   assert(await page.locator('#send').isDisabled());
   assert(await page.locator('#stop').isDisabled());
 
-  // Labels presentes en el MENU nuevo (verificado contra `help` del firmware).
+  // Labels present in the new MENU (verified against the firmware `help`).
   const expectedLabels=[
-   // WiFi — Inicio rápido
+   // WiFi: quick start
    'recon wifi','recon ble','recon status','recon stop','scanall','wardrive','stopscan',
-   // WiFi — Sniffers
+   // WiFi: Sniffers
    'sniffbeacon','sniffprobe','sniffdeauth','sniffpmkid','sniffraw','sniffpwn','sniffpinescan','sniffmultissid','sniffsae','packetcount',
-   // WiFi — Scanners
+   // WiFi: Scanners
    'pingscan','arpscan','portscan IP','portscan ssh','portscan telnet','portscan smtp','portscan dns','portscan http','portscan https','portscan rdp',
-   // WiFi — Attacks
+   // WiFi: Attacks
    'attack quiet','attack beacon','attack deauth','attack probe','attack rickroll','attack badmsg','attack sleep','evilportal','karma',
-   // WiFi — General
-   'clearlist','select','info -a','join','join -s','randapmac','randstamac','cloneapmac','clonestamac','add AP','add estación',
+   // WiFi: General
+   'clearlist','select','info -a','join','join -s','randapmac','randstamac','cloneapmac','clonestamac','add AP','add station',
    'ssid -a','ssid -r','save','load','channel','settings','settings -r','mactrack','led',
-   // WiFi — Listas
+   // WiFi: Lists
    'list -a','list -c','list -i','list -p','list -s','list -t','list -b','list -f','list -x','list -m',
    // Bluetooth
    'sniffbt','sniffbt airtag','sniffbt flipper','sniffbt flock','sniffbt meta','sniffskim','findmy','foxhunt',
@@ -73,24 +73,24 @@ const path=require('node:path');
    assert(labels.includes(label),'Missing menu entry: '+label);
   }
 
-  // Filtrar por 'recon' debe devolver exactamente 4 entradas.
+  // Filtering by 'recon' should return exactly 4 entries.
 await page.fill('#menuFilter','recon');
 const reconCount = await page.locator('.cmd').count();
-assert(reconCount >= 4, 'Filter "recon" debe mostrar al menos 4 comandos');
+assert(reconCount >= 4, 'Filter "recon" must show at least 4 commands');
   await page.fill('#menuFilter','');
 
   await page.click('#connect');
-  await page.waitForFunction(()=>document.querySelector('#stateText').textContent==='Conectado');
+  await page.waitForFunction(()=>document.querySelector('#stateText').textContent==='Connected');
   assert.equal((await page.evaluate(()=>window.openOptions)).baudRate,115200);
 
-  // Helper: abre los <details> padres y devuelve el botón.
+  // Helper: opens the parent <details> and returns the button.
   async function reveal(label,index=0){
    const b=page.locator('[data-label="'+label+'"]').nth(index);
    await b.evaluate(el=>{for(let p=el.parentElement;p;p=p.parentElement)if(p.tagName==='DETAILS')p.open=true});
    return b;
   }
 
-  // Aliases: cada label del menú debe enviar exactamente el comando real.
+  // Aliases: each menu label must send exactly the real command.
   const aliases={
    'recon wifi':'recon wifi',
    'recon ble':'recon ble',
@@ -127,7 +127,7 @@ assert(reconCount >= 4, 'Filter "recon" debe mostrar al menos 4 comandos');
    assert.equal((await page.evaluate(()=>window.sent)).at(-1),command+'\n',label);
   }
 
-  // Validación de editor: portscan IP exige índice, luego lo envía.
+  // Editor validation: portscan IP requires an index, then sends it.
   let b=await reveal('portscan IP');
   await b.click();
   let previous=await page.evaluate(()=>window.sent.length);
@@ -137,7 +137,7 @@ assert(reconCount >= 4, 'Filter "recon" debe mostrar al menos 4 comandos');
   await page.click('#runAction');
   assert.equal((await page.evaluate(()=>window.sent)).at(-1),'portscan -a -t 3\n');
 
-  // Validación de editor: join con contraseña que contiene espacios.
+  // Editor validation: join with a password containing spaces.
   b=await reveal('join');
   await b.click();
   let fields=page.locator('#actionFields input,#actionFields select');
@@ -146,7 +146,7 @@ assert(reconCount >= 4, 'Filter "recon" debe mostrar al menos 4 comandos');
   await page.click('#runAction');
   assert.equal((await page.evaluate(()=>window.sent)).at(-1),'join -a 2 -p "clave con espacio"\n');
 
-  // Validación de editor: brightness con rango 0-9.
+  // Editor validation: brightness with range 0-9.
   b=await reveal('brightness');
   await b.click();
   fields=page.locator('#actionFields input,#actionFields select');
@@ -158,7 +158,7 @@ assert(reconCount >= 4, 'Filter "recon" debe mostrar al menos 4 comandos');
   await page.click('#runAction');
   assert.equal((await page.evaluate(()=>window.sent)).at(-1),'brightness -s 7\n');
 
-  // XSS: HTML recibido por Serial debe mostrarse como texto.
+  // XSS: HTML received over Serial must be shown as text.
   await page.evaluate(()=>{window.feedBytes([195]);window.feedBytes([177]);window.feed('<img src=x onerror=alert(1)>\n')});
   await page.waitForFunction(()=>document.querySelector('#terminal').textContent.includes('ñ<img'));
   assert.equal(await page.locator('#terminal img').count(),0);
@@ -169,37 +169,37 @@ assert(reconCount >= 4, 'Filter "recon" debe mostrar al menos 4 comandos');
   await page.click('#send');
   assert.equal((await page.evaluate(()=>window.sent)).at(-1),'info\r\n');
 
-   // Comando con salto de línea debe rechazarse (validación directa).
+   // A command with a line break must be rejected (direct validation).
   const count=await page.evaluate(()=>window.sent.length);
   const rejected=await page.evaluate(()=>{
     try { validateCommand('info\nbad'); return false; }
     catch(e){ return e.message; }
   });
-  assert(rejected && rejected.includes('saltos de línea'),'validateCommand debe rechazar \\n: '+rejected);
+  assert(rejected && rejected.includes('line breaks'),'validateCommand must reject \\n: '+rejected);
   assert.equal(await page.evaluate(()=>window.sent.length),count);
 
-  // Botón Stop envía stopscan con el EOL actual (CRLF).
+  // Stop button sends stopscan with the current EOL (CRLF).
   await page.click('#stop');
   assert.equal((await page.evaluate(()=>window.sent)).at(-1),'stopscan\r\n');
 
-  // Desconexión y reconexión.
+  // Disconnection and reconnection.
   await page.click('#connect');
   await page.waitForFunction(()=>window.closeCount===1);
   assert(await page.locator('#send').isDisabled());
   await page.click('#connect');
-  await page.waitForFunction(()=>document.querySelector('#stateText').textContent==='Conectado');
+  await page.waitForFunction(()=>document.querySelector('#stateText').textContent==='Connected');
 
-  // Desconexión abrupta (USB unplug) → vuelve a Desconectado.
+  // Abrupt disconnection (USB unplug) -> returns to Disconnected.
   await page.evaluate(()=>window.unplug());
-  await page.waitForFunction(()=>document.querySelector('#stateText').textContent==='Desconectado');
+  await page.waitForFunction(()=>document.querySelector('#stateText').textContent==='Disconnected');
 
-  // Responsive móvil.
+  // Mobile responsive.
   await page.setViewportSize({width:390,height:844});
   assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
   const stopBox=await page.locator('#stop').boundingBox();
   assert(stopBox.y>=0&&stopBox.y+stopBox.height<=844);
   assert.deepEqual(errors,[]);
-  console.log('PASS: menú verificado contra help v1.16.0, aliases recon/BT/GPS, validación, Web Serial, UTF-8/XSS, LF/CRLF, filtro, reconexión y responsive.');
+  console.log('PASS: menu verified against help v1.16.0, recon/BT/GPS aliases, validation, Web Serial, UTF-8/XSS, LF/CRLF, filter, reconnection and responsive.');
  }finally{
   if(browser)await browser.close();
   server.close();
